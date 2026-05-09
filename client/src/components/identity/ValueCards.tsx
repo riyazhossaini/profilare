@@ -1,0 +1,1 @@
+﻿export { ValueCards } from "./IdentityCardSections";
