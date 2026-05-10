@@ -18,13 +18,13 @@ export function HomePage() {
   return (
     <main className="px-4 pb-10 pt-6 md:px-8 md:pb-14 md:pt-8">
       <nav className="mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl glass-card px-4 py-3 md:px-6">
-        <div className="inline-flex items-center rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5">
-          <img src="/assets/profilare-logo.png" alt="Profilare logo" className="h-7 w-auto" />
+        <div className="inline-flex items-center rounded-xl border border-zinc-200 bg-white px-1.5 py-1.5">
+          <img src="/assets/profilare-logo.png" alt="Profilare logo" className="h-8 w-auto" />
         </div>
         <div className="hidden items-center gap-6 text-sm text-zinc-600 md:flex">
-          <a href="#features">Features</a>
-          <a href="#templates">Templates</a>
-          <a href="#flow">Flow</a>
+          <Link to="/templates">Templates</Link>
+          <Link to="/how-it-works">How It Works</Link>
+          <Link to="/about-platform">About</Link>
         </div>
         <Link to="/templates" className="rounded-full bg-[#6C4DFF] px-5 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02]">
           Create Your Profile
@@ -74,9 +74,9 @@ export function HomePage() {
             <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-b from-[#6C4DFF] to-[#8f77ff]" />
             <div className="mx-auto mt-3 h-2.5 w-40 rounded bg-zinc-800/80" />
             <div className="mx-auto mt-2 h-2 w-24 rounded bg-zinc-400/70" />
-            <div className="mt-4 grid gap-2">
+            <div className="mt-4 grid grid-cols-2 gap-2">
               {highlights.slice(0, 6).map((item) => (
-                <div key={item} className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-700">
+                <div key={item} className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-center text-xs font-semibold text-zinc-700">
                   {item}
                 </div>
               ))}

@@ -16,6 +16,7 @@ import { analyticsRouter } from "./modules/analytics/analytics.routes";
 import { draftsRouter } from "./modules/drafts/drafts.routes";
 import { permissionsRouter } from "./modules/permissions/permissions.routes";
 import { aiRouter } from "./modules/ai/ai.routes";
+import { feedbackRouter } from "./modules/feedback/feedback.routes";
 
 export function createApp() {
   const app = express();
@@ -46,6 +47,7 @@ export function createApp() {
   app.use("/api/drafts", draftsRouter);
   app.use("/api/permissions", permissionsRouter);
   app.use("/api/ai", aiRouter);
+  app.use("/api/feedback", feedbackRouter);
 
   app.use(errorHandler);
 

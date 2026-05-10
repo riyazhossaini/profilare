@@ -25,40 +25,48 @@ import { SkillDetailPage } from "./pages/skills/SkillDetailPage";
 import { SkillsPage } from "./pages/skills/SkillsPage";
 import { TemplatesPage } from "./pages/TemplatesPage";
 import { CreateAccountPage } from "./pages/CreateAccountPage";
+import { PlatformAboutPage } from "./pages/PlatformAboutPage";
+import { HowItWorksPage } from "./pages/HowItWorksPage";
+import { FeedbackWidget } from "./components/FeedbackWidget";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/templates" element={<TemplatesPage />} />
-      <Route path="/create-account" element={<CreateAccountPage />} />
-      <Route path="/profile/:username" element={<ProfileHubPage />} />
-      <Route path="/profile/:username/about" element={<Navigate to="../identity" replace />} />
-      <Route path="/profile/:username/identity" element={<IdentityPage />} />
-      <Route path="/profile/:username/identity/:detailType/:slug" element={<IdentityDetailPage />} />
-      <Route path="/profile/:username/skills" element={<SkillsPage />} />
-      <Route path="/profile/:username/skills/:skillSlug" element={<SkillDetailPage />} />
-      <Route path="/profile/:username/education" element={<EducationPage />} />
-      <Route path="/profile/:username/education/resources" element={<EducationResourcesPage />} />
-      <Route path="/profile/:username/education/formal/:formalSlug" element={<FormalEducationDetailPage />} />
-      <Route path="/profile/:username/education/self-learning/:topicSlug" element={<SelfLearningDetailPage />} />
-      <Route path="/profile/:username/experience" element={<ExperiencePage />} />
-      <Route path="/profile/:username/experience/:experienceSlug" element={<ExperienceDetailPage />} />
-      <Route path="/profile/:username/projects" element={<ProjectsPage />} />
-      <Route path="/profile/:username/projects/:projectSlug" element={<ProjectDetailPage />} />
-      <Route path="/profile/:username/links" element={<LinksPage />} />
-      <Route path="/profile/:username/links/*" element={<LinksPage />} />
-      <Route path="/profile/:username/social-links" element={<LinksPage />} />
-      <Route path="/profile/:username/social-links/*" element={<LinksPage />} />
-      <Route path="/profile/:username/content" element={<ContentPage />} />
-      <Route path="/profile/:username/content/thoughts" element={<ThoughtsPage />} />
-      <Route path="/profile/:username/content/journal" element={<JournalPage />} />
-      <Route path="/profile/:username/content/drafts" element={<DraftsPage />} />
-      <Route path="/profile/:username/content/media/:mediaSlug" element={<MediaDetailPage />} />
-      <Route path="/profile/:username/content/:contentSlug" element={<ContentDetailPage />} />
-      <Route path="/profile/:username/contact" element={<ContactPage />} />
-      <Route path="/profile/:username/:sectionKey" element={<ProfileSectionPage />} />
-      <Route path="*" element={<Navigate to={`/profile/${profileData.username}`} replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/templates" element={<TemplatesPage />} />
+        <Route path="/create-account" element={<CreateAccountPage />} />
+        <Route path="/about-platform" element={<PlatformAboutPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/profile/:username" element={<ProfileHubPage />} />
+        <Route path="/profile/:username/about" element={<Navigate to="../identity" replace />} />
+        <Route path="/profile/:username/identity" element={<IdentityPage />} />
+        <Route path="/profile/:username/identity/:detailType/:slug" element={<IdentityDetailPage />} />
+        <Route path="/profile/:username/skills" element={<SkillsPage />} />
+        <Route path="/profile/:username/skills/:skillSlug" element={<SkillDetailPage />} />
+        <Route path="/profile/:username/education" element={<EducationPage />} />
+        <Route path="/profile/:username/education/resources" element={<EducationResourcesPage />} />
+        <Route path="/profile/:username/education/formal/:formalSlug" element={<FormalEducationDetailPage />} />
+        <Route path="/profile/:username/education/self-learning/:topicSlug" element={<SelfLearningDetailPage />} />
+        <Route path="/profile/:username/experience" element={<ExperiencePage />} />
+        <Route path="/profile/:username/experience/:experienceSlug" element={<ExperienceDetailPage />} />
+        <Route path="/profile/:username/projects" element={<ProjectsPage />} />
+        <Route path="/profile/:username/projects/:projectSlug" element={<ProjectDetailPage />} />
+        <Route path="/profile/:username/links" element={<LinksPage />} />
+        <Route path="/profile/:username/links/*" element={<LinksPage />} />
+        <Route path="/profile/:username/social-links" element={<LinksPage />} />
+        <Route path="/profile/:username/social-links/*" element={<LinksPage />} />
+        <Route path="/profile/:username/content" element={<ContentPage />} />
+        <Route path="/profile/:username/content/thoughts" element={<ThoughtsPage />} />
+        <Route path="/profile/:username/content/journal" element={<JournalPage />} />
+        <Route path="/profile/:username/content/drafts" element={<DraftsPage />} />
+        <Route path="/profile/:username/content/media/:mediaSlug" element={<MediaDetailPage />} />
+        <Route path="/profile/:username/content/:contentSlug" element={<ContentDetailPage />} />
+        <Route path="/profile/:username/contact" element={<ContactPage />} />
+        <Route path="/profile/:username/:sectionKey" element={<ProfileSectionPage />} />
+        <Route path="*" element={<Navigate to={`/profile/${profileData.username}`} replace />} />
+      </Routes>
+      <FeedbackWidget />
+    </>
   );
 }

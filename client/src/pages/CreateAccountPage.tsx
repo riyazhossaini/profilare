@@ -94,9 +94,9 @@ export function CreateAccountPage() {
                 templateId: template.id,
                 fullName: form.fullName.trim(),
                 username,
-                profileTitle: "Add your headline",
-                bio: "Add your story, focus, and goals.",
-                location: "Add your location",
+                profileTitle: "",
+                bio: "",
+                location: "",
               });
 
               window.setTimeout(() => {

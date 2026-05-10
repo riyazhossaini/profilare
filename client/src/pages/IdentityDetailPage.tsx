@@ -1,7 +1,53 @@
 ﻿import { Navigate, useParams } from "react-router-dom";
 import { AboutTopNav } from "../components/about/AboutTopNav";
-import { profileData } from "../data/profile";
 import { interestItems, roleItems, valueItems } from "../data/identity";
+import { profileData } from "../data/profile";
+
+type RoleDetailPatch = {
+  name?: string;
+  short?: string;
+  why?: string;
+  start?: string;
+  meaning?: string;
+  build?: string;
+  future?: string;
+};
+type InterestDetailPatch = {
+  name?: string;
+  short?: string;
+  why?: string;
+  start?: string;
+  meaning?: string;
+  build?: string;
+  future?: string;
+};
+type ValueDetailPatch = {
+  name?: string;
+  short?: string;
+  why?: string;
+  start?: string;
+  meaning?: string;
+  build?: string;
+  future?: string;
+};
+
+const IDENTITY_ROLE_DETAILS_KEY = "profilare:identity-role-detail-edits";
+const IDENTITY_ROLE_HIDDEN_KEY = "profilare:identity-role-hidden";
+const IDENTITY_INTEREST_DETAILS_KEY = "profilare:identity-interest-detail-edits";
+const IDENTITY_INTEREST_HIDDEN_KEY = "profilare:identity-interest-hidden";
+const IDENTITY_VALUE_DETAILS_KEY = "profilare:identity-value-detail-edits";
+const IDENTITY_VALUE_HIDDEN_KEY = "profilare:identity-value-hidden";
+
+function load<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
 
 const groups = {
   role: roleItems,
@@ -23,7 +69,28 @@ export function IdentityDetailPage() {
   }
 
   const typedGroup = groups[detailType as GroupKey];
-  const item = typedGroup.find((entry) => entry.slug === slug);
+  const rolePatches = load<Record<string, RoleDetailPatch>>(IDENTITY_ROLE_DETAILS_KEY, {});
+  const hiddenRoles = load<Record<string, boolean>>(IDENTITY_ROLE_HIDDEN_KEY, {});
+  const interestPatches = load<Record<string, InterestDetailPatch>>(IDENTITY_INTEREST_DETAILS_KEY, {});
+  const hiddenInterests = load<Record<string, boolean>>(IDENTITY_INTEREST_HIDDEN_KEY, {});
+  const valuePatches = load<Record<string, ValueDetailPatch>>(IDENTITY_VALUE_DETAILS_KEY, {});
+  const hiddenValues = load<Record<string, boolean>>(IDENTITY_VALUE_HIDDEN_KEY, {});
+  const mappedGroup =
+    detailType === "role"
+      ? typedGroup
+          .map((entry) => ({ ...entry, ...(rolePatches[entry.slug] || {}) }))
+          .filter((entry) => !hiddenRoles[entry.slug])
+      : detailType === "interest"
+      ? typedGroup
+          .map((entry) => ({ ...entry, ...(interestPatches[entry.slug] || {}) }))
+          .filter((entry) => !hiddenInterests[entry.slug])
+      : detailType === "value"
+      ? typedGroup
+          .map((entry) => ({ ...entry, ...(valuePatches[entry.slug] || {}) }))
+          .filter((entry) => !hiddenValues[entry.slug])
+      : typedGroup;
+
+  const item = mappedGroup.find((entry) => entry.slug === slug);
 
   if (!item) {
     return <Navigate to={`/profile/${profileData.username}/identity`} replace />;

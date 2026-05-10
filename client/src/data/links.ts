@@ -61,7 +61,7 @@ export const featuredLinks = [
 
 export const mainLinks: PlatformLink[] = [
   { name: "X / Twitter", handle: "@riyaz", url: "https://x.com/riyaz", description: "Startup notes, AI ideas, and short reflections.", category: "Social", logo: "https://cdn.simpleicons.org/x/111111", active: "Active", metric: "3.2k followers" },
-  { name: "LinkedIn", handle: "Riyaz Hossaini", url: "https://linkedin.com/in/riyaz", description: "Professional updates and founder journey posts.", category: "Work", logo: "https://cdn.simpleicons.org/linkedin/0A66C2", active: "Active", metric: "5.1k followers" },
+  { name: "LinkedIn", handle: "Riyaz Hossaini", url: "https://linkedin.com/in/riyaz", description: "Professional updates and founder journey posts.", category: "Work", logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png", active: "Active", metric: "5.1k followers" },
   { name: "GitHub", handle: "riyaz", url: "https://github.com/riyaz", description: "Code repositories, product prototypes, and UI systems.", category: "Work", logo: "https://cdn.simpleicons.org/github/111111", active: "Active", metric: "56 repos" },
   { name: "Medium", handle: "@riyaz", url: "https://medium.com/@riyaz", description: "Long-form writing on design, systems, and startups.", category: "Content", logo: "https://cdn.simpleicons.org/medium/111111", active: "Growing", metric: "41 stories" },
   { name: "YouTube", handle: "Riyaz Builds", url: "https://youtube.com/@riyaz", description: "Builder clips, product breakdowns, and visual essays.", category: "Content", logo: "https://cdn.simpleicons.org/youtube/FF0000", active: "Growing", metric: "1.1k subscribers" },

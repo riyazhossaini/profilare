@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, Pencil, Search } from "lucide-react";
+import { ExternalLink, Pencil, Search, Trash2 } from "lucide-react";
 import { type ComponentType } from "react";
 import { Link } from "react-router-dom";
 import { type LinkCategory, type PlatformLink } from "../../data/links";
@@ -56,6 +56,7 @@ export function LinksHero({
   statement,
   stats,
   avatarText = "RH",
+  avatarUrl = "",
   onEdit,
 }: {
   name: string;
@@ -64,8 +65,12 @@ export function LinksHero({
   statement: string;
   stats?: Array<{ label: string; value: string }>;
   avatarText?: string;
+  avatarUrl?: string;
   onEdit?: () => void;
 }) {
+  const u = username.trim();
+  const h = headline.trim();
+  const s = statement.trim();
   return (
     <motion.section
       initial={{ opacity: 0, y: 12 }}
@@ -79,13 +84,13 @@ export function LinksHero({
         </button>
       ) : null}
       <div className="flex flex-col items-center">
-        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500 to-indigo-600 text-2xl font-bold text-white shadow-xl">
-          {avatarText}
+        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-violet-500 to-indigo-600 text-2xl font-bold text-white shadow-xl">
+          {avatarUrl ? <img src={avatarUrl} alt={`${name} avatar`} className="h-full w-full object-cover" /> : avatarText}
         </div>
         <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">{name}</h1>
-        <p className="mt-1 text-base font-medium text-zinc-600">@{username}</p>
-        <p className="mt-2 text-lg font-semibold text-zinc-800">{headline}</p>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-700 md:text-lg">"{statement}"</p>
+        {u ? <p className="mt-1 text-base font-medium text-zinc-600">@{u}</p> : null}
+        {h ? <p className="mt-2 text-lg font-semibold text-zinc-800">{h}</p> : null}
+        {s ? <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-700 md:text-lg">"{s}"</p> : null}
       </div>
       {stats && stats.length ? (
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,8 +111,8 @@ export function LinksOverview({ categories, activePlatforms, focus }: { categori
     <section className="mt-6 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_20px_46px_-30px_rgba(79,70,229,0.45)]">
       <h2 className="text-2xl font-bold">Links Overview</h2>
       <p className="mt-2 text-sm text-zinc-700">Digital focus: {focus}</p>
-      <p className="mt-2 text-sm text-zinc-700">Categories: {categories.join(" • ")}</p>
-      <p className="mt-2 text-sm text-zinc-700">Most active: {activePlatforms.join(" • ")}</p>
+      <p className="mt-2 text-sm text-zinc-700">Categories: {categories.join(" | ")}</p>
+      <p className="mt-2 text-sm text-zinc-700">Most active: {activePlatforms.join(" | ")}</p>
     </section>
   );
 }
@@ -133,7 +138,7 @@ export function FeaturedLinks({ items }: { items: Array<{ title: string; platfor
   );
 }
 
-export function LinkCard({ item, onEdit }: { item: PlatformLink; onEdit?: () => void }) {
+export function LinkCard({ item, onEdit, onDelete }: { item: PlatformLink; onEdit?: () => void; onDelete?: () => void }) {
   const Icon = item.icon;
   return (
     <article className="group rounded-3xl border border-violet-100/80 bg-gradient-to-br from-white via-white to-violet-50/70 p-5 shadow-[0_20px_46px_-30px_rgba(79,70,229,0.45)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-30px_rgba(79,70,229,0.55)]">
@@ -147,14 +152,24 @@ export function LinkCard({ item, onEdit }: { item: PlatformLink; onEdit?: () => 
             <span className="h-2 w-2 rounded-full bg-violet-600" />
           )}
         </span>
-        {onEdit ? (
-          <button
-            onClick={onEdit}
-            className="rounded-full border border-zinc-200 bg-white p-1.5 text-zinc-700 opacity-0 transition group-hover:opacity-100"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-        ) : null}
+        <div className="flex items-center gap-1.5">
+          {onEdit ? (
+            <button
+              onClick={onEdit}
+              className="rounded-full border border-zinc-200 bg-white p-1.5 text-zinc-700 pointer-events-none opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              onClick={onDelete}
+              className="rounded-full border border-rose-200 bg-white p-1.5 text-rose-600 pointer-events-none opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          ) : null}
+        </div>
       </div>
       <h3 className="mt-3 text-lg font-extrabold tracking-tight text-zinc-900">{item.name}</h3>
       <p className="mt-0.5 text-xs font-medium text-zinc-500">{item.handle}</p>
@@ -168,13 +183,13 @@ export function LinkCard({ item, onEdit }: { item: PlatformLink; onEdit?: () => 
   );
 }
 
-export function LinksGrid({ items, onEdit }: { items: PlatformLink[]; onEdit?: (index: number) => void }) {
+export function LinksGrid({ items, onEdit, onDelete }: { items: PlatformLink[]; onEdit?: (index: number) => void; onDelete?: (index: number) => void }) {
   return (
     <section className="mt-6">
       <h2 className="text-2xl font-bold">Main Links</h2>
       <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {items.map((item, index) => (
-          <LinkCard key={`${item.name}-${item.handle}-${index}`} item={item} onEdit={onEdit ? () => onEdit(index) : undefined} />
+          <LinkCard key={`${item.name}-${item.handle}-${index}`} item={item} onEdit={onEdit ? () => onEdit(index) : undefined} onDelete={onDelete ? () => onDelete(index) : undefined} />
         ))}
       </div>
     </section>
@@ -206,9 +221,11 @@ export const WritingPlatformsSection = ({ items }: { items: Array<{ name: string
 export function StartupLinksSection({
   items,
   onEdit,
+  onDelete,
 }: {
-  items: Array<{ name: string; tagline: string; stage: string; category: string; url: string; icon?: ComponentType<{ className?: string }> }>;
+  items: Array<{ name: string; tagline: string; stage: string; category: string; url: string; logo?: string; icon?: ComponentType<{ className?: string }> }>;
   onEdit?: (index: number) => void;
+  onDelete?: (index: number) => void;
 }) {
   return (
     <section className="mt-8 rounded-3xl border border-violet-100/80 bg-gradient-to-br from-white via-violet-50/40 to-indigo-50/40 p-6 shadow-[0_24px_54px_-34px_rgba(79,70,229,0.55)]">
@@ -226,13 +243,26 @@ export function StartupLinksSection({
             >
               <div className="flex items-start justify-between gap-3">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 text-violet-700">
-                  {Icon ? <Icon className="h-5 w-5" /> : <span className="h-2 w-2 rounded-full bg-violet-600" />}
+                  {item.logo ? (
+                    <img src={item.logo} alt={`${item.name} logo`} className="h-6 w-6 object-contain" />
+                  ) : Icon ? (
+                    <Icon className="h-5 w-5" />
+                  ) : (
+                    <span className="h-2 w-2 rounded-full bg-violet-600" />
+                  )}
                 </span>
-                {onEdit ? (
-                  <button onClick={() => onEdit(index)} className="rounded-full border border-zinc-200 bg-white p-1.5 text-zinc-700 opacity-0 transition group-hover:opacity-100">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </button>
-                ) : null}
+                <div className="flex items-center gap-1.5">
+                  {onEdit ? (
+                    <button onClick={() => onEdit(index)} className="rounded-full border border-zinc-200 bg-white p-1.5 text-zinc-700 pointer-events-none opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  ) : null}
+                  {onDelete ? (
+                    <button onClick={() => onDelete(index)} className="rounded-full border border-rose-200 bg-white p-1.5 text-rose-600 pointer-events-none opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  ) : null}
+                </div>
               </div>
               <h3 className="mt-3 text-lg font-extrabold tracking-tight text-zinc-900">{item.name}</h3>
               <p className="mt-1 text-sm text-zinc-700">{item.tagline}</p>

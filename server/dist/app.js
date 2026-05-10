@@ -22,6 +22,7 @@ const analytics_routes_1 = require("./modules/analytics/analytics.routes");
 const drafts_routes_1 = require("./modules/drafts/drafts.routes");
 const permissions_routes_1 = require("./modules/permissions/permissions.routes");
 const ai_routes_1 = require("./modules/ai/ai.routes");
+const feedback_routes_1 = require("./modules/feedback/feedback.routes");
 function createApp() {
     const app = (0, express_1.default)();
     app.use((0, helmet_1.default)());
@@ -46,6 +47,7 @@ function createApp() {
     app.use("/api/drafts", drafts_routes_1.draftsRouter);
     app.use("/api/permissions", permissions_routes_1.permissionsRouter);
     app.use("/api/ai", ai_routes_1.aiRouter);
+    app.use("/api/feedback", feedback_routes_1.feedbackRouter);
     app.use(error_handler_1.errorHandler);
     return app;
 }

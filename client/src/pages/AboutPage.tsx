@@ -19,6 +19,7 @@ import { RelatedProfileLinks } from "../components/identity/RelatedProfileLinks"
 import { RoleCards } from "../components/identity/RoleCards";
 import { ValueCards } from "../components/identity/ValueCards";
 import { VisionCard } from "../components/identity/VisionCard";
+import { EditableSectionBlock } from "../components/EditableSectionBlock";
 import {
   beliefItems,
   identityOverview,
@@ -29,6 +30,7 @@ import {
   valueItems,
 } from "../data/identity";
 import { profileData } from "../data/profile";
+import { getGlobalProfileAvatarUrl } from "../lib/profileAvatar";
 
 export function AboutPage() {
   const { username } = useParams<{ username: string }>();
@@ -113,16 +115,29 @@ export function AboutPage() {
           headline={profileData.headline}
           location={profileData.location}
           statement="I’m learning technology, business, design, and communication to build useful products for the future."
+          avatarUrl={getGlobalProfileAvatarUrl()}
         />
-        <AboutSummaryCard items={summaryItems} />
-        <StoryTimeline points={storyPoints} />
-        <MissionVisionCards
-          mission="To learn deeply, build useful products, and solve real-world problems through technology."
-          vision="To become a strong builder who creates products that help people work, learn, and grow better."
-        />
-        <ValuesGrid values={values} />
-        <CurrentFocus focusItems={focusItems} />
-        <PersonalFacts facts={facts} />
+        <EditableSectionBlock sectionId="about-summary" label="About Summary">
+          <AboutSummaryCard items={summaryItems} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-story-timeline" label="Story Timeline">
+          <StoryTimeline points={storyPoints} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-mission-vision" label="Mission & Vision">
+          <MissionVisionCards
+            mission="To learn deeply, build useful products, and solve real-world problems through technology."
+            vision="To become a strong builder who creates products that help people work, learn, and grow better."
+          />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-values" label="Values">
+          <ValuesGrid values={values} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-current-focus" label="Current Focus">
+          <CurrentFocus focusItems={focusItems} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-personal-facts" label="Personal Facts">
+          <PersonalFacts facts={facts} />
+        </EditableSectionBlock>
 
         <section id="identity" className="pt-2">
           <h2 className="mt-6 text-center text-2xl font-extrabold tracking-tight text-zinc-900 md:text-3xl">Identity Deep Dive</h2>
@@ -130,29 +145,51 @@ export function AboutPage() {
             Roles, interests, values, and direction in one connected identity story.
           </p>
         </section>
-        <IdentityOverview items={identityOverview} />
-        <RoleCards routePrefix={`/profile/${profileData.username}/identity/role`} items={roleItems} />
-        <InterestCards routePrefix={`/profile/${profileData.username}/identity/interest`} items={interestItems} />
-        <ValueCards routePrefix={`/profile/${profileData.username}/identity/value`} items={valueItems} />
-        <PersonalityGrid traits={personalityTraits} />
-        <MissionCard
-          mission="To learn deeply, build useful products, and become a stronger founder."
-          doingNow="Building consistently while improving AI, communication, and product depth."
-          whyMatters="Strong fundamentals now create larger impact later."
-          nextMilestone="Ship a complete product case study with measurable user value."
-        />
-        <VisionCard
-          vision="To build technology products that help people learn, work, create, and grow better."
-          direction="Build identity-first, human-centered technology platforms."
-          impact="Enable individuals to become more capable and confident through better tools."
-          problems="Fragmented learning, unclear digital identity, and low-quality productivity systems."
-          become="A founder-builder with deep character, clear thinking, and world-class execution."
-        />
-        <BeliefCards beliefs={beliefItems} />
-        <IdentityTimeline items={identityTimeline} />
-        <RelatedProfileLinks username={profileData.username} />
+        <EditableSectionBlock sectionId="about-identity-overview" label="Identity Overview">
+          <IdentityOverview items={identityOverview} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-roles" label="Roles">
+          <RoleCards routePrefix={`/profile/${profileData.username}/identity/role`} items={roleItems} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-interests" label="Interests">
+          <InterestCards routePrefix={`/profile/${profileData.username}/identity/interest`} items={interestItems} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-values" label="Values">
+          <ValueCards routePrefix={`/profile/${profileData.username}/identity/value`} items={valueItems} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-personality" label="Personality">
+          <PersonalityGrid traits={personalityTraits} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-mission" label="Mission">
+          <MissionCard
+            mission="To learn deeply, build useful products, and become a stronger founder."
+            doingNow="Building consistently while improving AI, communication, and product depth."
+            whyMatters="Strong fundamentals now create larger impact later."
+            nextMilestone="Ship a complete product case study with measurable user value."
+          />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-vision" label="Vision">
+          <VisionCard
+            vision="To build technology products that help people learn, work, create, and grow better."
+            direction="Build identity-first, human-centered technology platforms."
+            impact="Enable individuals to become more capable and confident through better tools."
+            problems="Fragmented learning, unclear digital identity, and low-quality productivity systems."
+            become="A founder-builder with deep character, clear thinking, and world-class execution."
+          />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-beliefs" label="Beliefs">
+          <BeliefCards beliefs={beliefItems} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-identity-timeline" label="Identity Timeline">
+          <IdentityTimeline items={identityTimeline} />
+        </EditableSectionBlock>
+        <EditableSectionBlock sectionId="about-related-links" label="Related Links">
+          <RelatedProfileLinks username={profileData.username} />
+        </EditableSectionBlock>
 
-        <AboutCTA username={profileData.username} />
+        <EditableSectionBlock sectionId="about-cta" label="Next Step">
+          <AboutCTA username={profileData.username} />
+        </EditableSectionBlock>
       </div>
     </main>
   );

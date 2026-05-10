@@ -10,9 +10,9 @@ function TemplatePreviewMockup({ sections }: { sections: string[] }) {
       <div className="mx-auto h-12 w-12 rounded-xl bg-gradient-to-b from-[#6C4DFF] to-[#9a8aff]" />
       <div className="mx-auto mt-3 h-2.5 w-24 rounded bg-zinc-800/80" />
       <div className="mx-auto mt-2 h-2 w-16 rounded bg-zinc-400/70" />
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         {sections.slice(0, 5).map((s) => (
-          <div key={s} className="rounded-lg border border-zinc-100 bg-zinc-50 px-2.5 py-1.5 text-[10px] font-medium text-zinc-700">
+          <div key={s} className="rounded-lg border border-zinc-100 bg-zinc-50 px-2.5 py-1.5 text-center text-[10px] font-semibold text-zinc-700">
             {s}
           </div>
         ))}
