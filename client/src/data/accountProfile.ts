@@ -1,4 +1,5 @@
 import { templates } from "./templates";
+import { profileData } from "./profile";
 
 export type AccountProfileDraft = {
   templateId: string;
@@ -14,6 +15,10 @@ const STORAGE_KEY = "profilare:account-profile";
 
 export function saveAccountProfileDraft(data: AccountProfileDraft) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  profileData.name = data.fullName || profileData.name;
+  profileData.username = data.username || profileData.username;
+  profileData.headline = data.profileTitle || profileData.headline;
+  profileData.location = data.location || profileData.location;
 }
 
 export function getAccountProfileDraft(): AccountProfileDraft | null {
@@ -28,5 +33,9 @@ export function getAccountProfileDraft(): AccountProfileDraft | null {
 
 export function getTemplateSections(templateId: string): string[] {
   return templates.find((t) => t.id === templateId)?.sections || [];
+}
+
+export function clearAccountProfileDraft() {
+  localStorage.removeItem(STORAGE_KEY);
 }
 

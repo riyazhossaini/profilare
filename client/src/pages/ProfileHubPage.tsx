@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Camera, Plus, Save, User, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { ProfileHeader } from "../components/ProfileHeader";
 import { SectionGrid } from "../components/SectionGrid";
-import { getAccountProfileDraft, getTemplateSections } from "../data/accountProfile";
+import { clearAccountProfileDraft, getAccountProfileDraft, getTemplateSections } from "../data/accountProfile";
 import { profileData, profileSections, type ProfileSection } from "../data/profile";
 
 type HeaderDraft = {
@@ -21,7 +21,7 @@ type SectionDraft = {
   description: string;
 };
 
-const PROFILE_EDIT_KEY = "profilare:profile-hub-edits";
+const PROFILE_EDIT_KEY_PREFIX = "profilare:profile-hub-edits";
 
 type PersistedEdits = {
   header?: Partial<HeaderDraft>;
@@ -29,10 +29,19 @@ type PersistedEdits = {
   activeSectionKeys?: string[];
 };
 
-function loadEdits(): PersistedEdits {
+type AccountActionToast =
+  | { type: "confirm-logout"; message: string }
+  | { type: "confirm-delete"; message: string }
+  | null;
+
+function profileEditKey(username: string) {
+  return `${PROFILE_EDIT_KEY_PREFIX}:${username}`;
+}
+
+function loadEdits(username: string): PersistedEdits {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(PROFILE_EDIT_KEY);
+    const raw = window.localStorage.getItem(profileEditKey(username));
     if (!raw) return {};
     return JSON.parse(raw) as PersistedEdits;
   } catch {
@@ -40,20 +49,22 @@ function loadEdits(): PersistedEdits {
   }
 }
 
-function saveEdits(next: PersistedEdits) {
+function saveEdits(username: string, next: PersistedEdits) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(PROFILE_EDIT_KEY, JSON.stringify(next));
+  window.localStorage.setItem(profileEditKey(username), JSON.stringify(next));
 }
 
 export function ProfileHubPage() {
+  const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
   const accountDraft = getAccountProfileDraft();
   const activeUsername = accountDraft?.username || profileData.username;
 
-  const [edits, setEdits] = useState<PersistedEdits>(loadEdits);
+  const [edits, setEdits] = useState<PersistedEdits>(() => loadEdits(activeUsername));
   const [headerModalOpen, setHeaderModalOpen] = useState(false);
   const [sectionModalKey, setSectionModalKey] = useState<string | null>(null);
   const [addPageModalOpen, setAddPageModalOpen] = useState(false);
+  const [accountActionToast, setAccountActionToast] = useState<AccountActionToast>(null);
 
   if (!username || username !== activeUsername) {
     return <Navigate to={`/profile/${activeUsername}`} replace />;
@@ -124,7 +135,7 @@ export function ProfileHubPage() {
       });
   }, [edits.sections, activeSectionKeys]);
 
-  const addableKeys = ["identity", "skills", "education", "experience", "projects", "content", "contact"];
+  const addableKeys = ["identity", "skills", "education", "experience", "projects", "content", "links", "contact"];
   const availablePages = profileSections.filter((s) => addableKeys.includes(s.key) && !activeSectionKeys.includes(s.key));
 
   return (
@@ -138,6 +149,12 @@ export function ProfileHubPage() {
           bio={currentHeader.bio}
           photoUrl={currentHeader.photoUrl}
           onEdit={() => setHeaderModalOpen(true)}
+          onLogout={() => {
+            setAccountActionToast({ type: "confirm-logout", message: "Are you sure you want to logout?" });
+          }}
+          onDeleteAccount={() => {
+            setAccountActionToast({ type: "confirm-delete", message: "Are you sure you want to delete this account?" });
+          }}
         />
 
         <motion.p
@@ -169,7 +186,7 @@ export function ProfileHubPage() {
             onSave={(next) => {
               const nextEdits = { ...edits, header: next };
               setEdits(nextEdits);
-              saveEdits(nextEdits);
+              saveEdits(activeUsername, nextEdits);
               setHeaderModalOpen(false);
             }}
           />
@@ -187,7 +204,7 @@ export function ProfileHubPage() {
                 },
               };
               setEdits(nextEdits);
-              saveEdits(nextEdits);
+              saveEdits(activeUsername, nextEdits);
               setSectionModalKey(null);
             }}
             canRemove={addableKeys.includes(sectionModalKey) && activeSectionKeys.length > 1}
@@ -197,7 +214,7 @@ export function ProfileHubPage() {
               const nextKeys = activeSectionKeys.filter((key) => key !== sectionModalKey);
               const nextEdits = { ...edits, activeSectionKeys: nextKeys };
               setEdits(nextEdits);
-              saveEdits(nextEdits);
+              saveEdits(activeUsername, nextEdits);
               setSectionModalKey(null);
             }}
           />
@@ -210,13 +227,70 @@ export function ProfileHubPage() {
               const nextKeys = Array.from(new Set([...activeSectionKeys, key]));
               const nextEdits = { ...edits, activeSectionKeys: nextKeys };
               setEdits(nextEdits);
-              saveEdits(nextEdits);
+              saveEdits(activeUsername, nextEdits);
               setAddPageModalOpen(false);
+            }}
+          />
+        ) : null}
+        {accountActionToast ? (
+          <ActionToast
+            toast={accountActionToast}
+            onClose={() => setAccountActionToast(null)}
+            onConfirm={() => {
+              if (!accountActionToast) return;
+              if (accountActionToast.type === "confirm-logout") {
+                clearAccountProfileDraft();
+                window.localStorage.removeItem(profileEditKey(activeUsername));
+                setAccountActionToast(null);
+                navigate("/");
+                return;
+              }
+              const keysToRemove: string[] = [];
+              for (let i = 0; i < window.localStorage.length; i += 1) {
+                const key = window.localStorage.key(i);
+                if (key && key.startsWith("profilare:")) keysToRemove.push(key);
+              }
+              keysToRemove.forEach((key) => window.localStorage.removeItem(key));
+              setAccountActionToast(null);
+              navigate("/");
             }}
           />
         ) : null}
       </AnimatePresence>
     </main>
+  );
+}
+
+function ActionToast({
+  toast,
+  onClose,
+  onConfirm,
+}: {
+  toast: AccountActionToast;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  if (!toast) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 12 }}
+      className="fixed bottom-4 left-1/2 z-[60] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-xl"
+    >
+      <p className="text-sm text-zinc-800">{toast.message}</p>
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={onConfirm}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold text-white ${toast.type === "confirm-delete" ? "bg-rose-600" : "bg-zinc-900"}`}
+        >
+          Confirm
+        </button>
+        <button onClick={onClose} className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700">
+          Cancel
+        </button>
+      </div>
+    </motion.div>
   );
 }
 

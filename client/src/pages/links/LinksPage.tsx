@@ -52,6 +52,10 @@ function save<T>(key: string, value: T) {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
+function userScopedKey(base: string, username: string) {
+  return `${base}:${username}`;
+}
+
 export function LinksPage() {
   const { username } = useParams<{ username: string }>();
   const draft = getAccountProfileDraft();
@@ -59,20 +63,25 @@ export function LinksPage() {
   const isAccountHolder = routeUsername === profileData.username;
   const displayName = draft?.fullName || profileData.name;
   const displayHeadline = draft?.profileTitle || profileData.headline;
+  const mainKey = userScopedKey(MAIN_KEY, routeUsername);
+  const startupKey = userScopedKey(STARTUP_KEY, routeUsername);
+  const heroKey = userScopedKey(HERO_KEY, routeUsername);
+  const mainHiddenKey = userScopedKey(MAIN_HIDDEN_KEY, routeUsername);
+  const startupHiddenKey = userScopedKey(STARTUP_HIDDEN_KEY, routeUsername);
 
   const [search, setSearch] = useState("");
-  const [mainItems, setMainItems] = useState<PlatformLink[]>(() => load(MAIN_KEY, mainLinks.map((i) => ({ ...i }))));
+  const [mainItems, setMainItems] = useState<PlatformLink[]>(() => load(mainKey, mainLinks.map((i) => ({ ...i }))));
   const [startupItems, setStartupItems] = useState<StartupLink[]>(() =>
     load(
-      STARTUP_KEY,
+      startupKey,
       startupLinks.map((i) => ({ name: i.name, tagline: i.tagline, stage: i.stage, category: i.category, url: i.url, logo: "" })),
     ),
   );
   const [editingMain, setEditingMain] = useState<number | null>(null);
   const [editingStartup, setEditingStartup] = useState<number | null>(null);
   const [editingHero, setEditingHero] = useState(false);
-  const [mainHidden, setMainHidden] = useState<boolean[]>(() => load(MAIN_HIDDEN_KEY, mainLinks.map(() => false)));
-  const [startupHidden, setStartupHidden] = useState<boolean[]>(() => load(STARTUP_HIDDEN_KEY, startupLinks.map(() => false)));
+  const [mainHidden, setMainHidden] = useState<boolean[]>(() => load(mainHiddenKey, mainLinks.map(() => false)));
+  const [startupHidden, setStartupHidden] = useState<boolean[]>(() => load(startupHiddenKey, startupLinks.map(() => false)));
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const heroDefault: HeroDraft = {
@@ -86,7 +95,7 @@ export function LinksPage() {
       .slice(0, 2)
       .join(""),
   };
-  const [hero, setHero] = useState<HeroDraft>(() => load(HERO_KEY, heroDefault));
+  const [hero, setHero] = useState<HeroDraft>(() => load(heroKey, heroDefault));
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -113,14 +122,14 @@ export function LinksPage() {
       const next = [...mainHidden];
       next[toast.index] = true;
       setMainHidden(next);
-      save(MAIN_HIDDEN_KEY, next);
+      save(mainHiddenKey, next);
       setToast({ type: "success", message: "Link card deleted." });
       return;
     }
     const next = [...startupHidden];
     next[toast.index] = true;
     setStartupHidden(next);
-    save(STARTUP_HIDDEN_KEY, next);
+    save(startupHiddenKey, next);
     setToast({ type: "success", message: "Startup card deleted." });
   };
 
@@ -164,7 +173,7 @@ export function LinksPage() {
           ) : (
             <section className="mt-6 rounded-2xl border border-dashed border-zinc-300 bg-white/70 p-5 text-center">
               <p className="text-sm text-zinc-600">All main link cards are deleted.</p>
-              <button onClick={() => { const next = mainHidden.map(() => false); setMainHidden(next); save(MAIN_HIDDEN_KEY, next); setToast({ type: "success", message: "Main links restored." }); }} className="mt-3 rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700">Restore Main Links</button>
+              <button onClick={() => { const next = mainHidden.map(() => false); setMainHidden(next); save(mainHiddenKey, next); setToast({ type: "success", message: "Main links restored." }); }} className="mt-3 rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700">Restore Main Links</button>
             </section>
           )}
         </EditableSectionBlock>
@@ -185,7 +194,7 @@ export function LinksPage() {
           ) : (
             <section className="mt-6 rounded-2xl border border-dashed border-zinc-300 bg-white/70 p-5 text-center">
               <p className="text-sm text-zinc-600">All startup cards are deleted.</p>
-              <button onClick={() => { const next = startupHidden.map(() => false); setStartupHidden(next); save(STARTUP_HIDDEN_KEY, next); setToast({ type: "success", message: "Startup links restored." }); }} className="mt-3 rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700">Restore Startup Links</button>
+              <button onClick={() => { const next = startupHidden.map(() => false); setStartupHidden(next); save(startupHiddenKey, next); setToast({ type: "success", message: "Startup links restored." }); }} className="mt-3 rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700">Restore Startup Links</button>
             </section>
           )}
         </EditableSectionBlock>
@@ -204,7 +213,7 @@ export function LinksPage() {
               const copy = [...mainItems];
               copy[editingMain] = next;
               setMainItems(copy);
-              save(MAIN_KEY, copy);
+              save(mainKey, copy);
               setEditingMain(null);
             }}
           />
@@ -217,7 +226,7 @@ export function LinksPage() {
               const copy = [...startupItems];
               copy[editingStartup] = next;
               setStartupItems(copy);
-              save(STARTUP_KEY, copy);
+              save(startupKey, copy);
               setEditingStartup(null);
             }}
           />
@@ -228,7 +237,7 @@ export function LinksPage() {
             onClose={() => setEditingHero(false)}
             onSave={(next) => {
               setHero(next);
-              save(HERO_KEY, next);
+              save(heroKey, next);
               setEditingHero(false);
             }}
           />

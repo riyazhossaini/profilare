@@ -1,4 +1,5 @@
-import { MapPin, Pencil } from "lucide-react";
+import { MapPin, Pencil, Settings } from "lucide-react";
+import { useState } from "react";
 
 type ProfileHeaderProps = {
   name: string;
@@ -8,15 +9,51 @@ type ProfileHeaderProps = {
   bio?: string;
   photoUrl?: string;
   onEdit?: () => void;
+  onLogout?: () => void;
+  onDeleteAccount?: () => void;
 };
 
-export function ProfileHeader({ name, username, headline, location, bio, photoUrl, onEdit }: ProfileHeaderProps) {
+export function ProfileHeader({ name, username, headline, location, bio, photoUrl, onEdit, onLogout, onDeleteAccount }: ProfileHeaderProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const cleanUsername = username.trim();
   const cleanHeadline = headline.trim();
   const cleanBio = (bio || "").trim();
   const cleanLocation = (location || "").trim();
   return (
     <header className="relative mx-auto w-full max-w-3xl rounded-3xl border border-white/60 bg-white/65 p-6 text-center shadow-[0_24px_60px_-35px_rgba(76,29,149,0.5)] backdrop-blur-sm md:p-8">
+      {onLogout || onDeleteAccount ? (
+        <div className="absolute left-4 top-4">
+          <button onClick={() => setSettingsOpen((p) => !p)} className="rounded-full border border-zinc-200 bg-white p-2 text-zinc-700 transition hover:bg-zinc-50">
+            <Settings className="h-4 w-4" />
+          </button>
+          {settingsOpen ? (
+            <div className="absolute left-0 top-12 z-20 min-w-44 rounded-2xl border border-zinc-200 bg-white p-2 text-left shadow-lg">
+              {onLogout ? (
+                <button
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full rounded-xl px-3 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100"
+                >
+                  Logout
+                </button>
+              ) : null}
+              {onDeleteAccount ? (
+                <button
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    onDeleteAccount();
+                  }}
+                  className="w-full rounded-xl px-3 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-50"
+                >
+                  Delete Account
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       {onEdit ? (
         <button onClick={onEdit} className="absolute right-4 top-4 rounded-full border border-zinc-200 bg-white p-2 text-zinc-700 transition hover:bg-zinc-50">
           <Pencil className="h-4 w-4" />
